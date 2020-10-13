@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import { Grid } from '@material-ui/core';
+import { Grid, Slider, Typography } from '@material-ui/core';
 import { tic } from '../../redux/actions';
 import GameBoard from './Board';
 import { GameMode } from '../../lib/Map';
@@ -22,13 +22,20 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-const Game: React.FC<GameProps> = ({ dispatch, layout, score, runningScore, iteration }): JSX.Element => {
+const Game: React.FC<GameProps> = ({ dispatch, layout, score, mode,  runningScore, iteration }): JSX.Element => {
   
   const styles = useStyles({});
+  const [stepInterval, setStepInterval] = useState<number>(250);
 
   useEffect(() => {
-    setInterval(() => {dispatch(tic());}, 250);
-  }, [dispatch]);
+    setInterval(() => {dispatch(tic());}, stepInterval);
+  }, [dispatch, stepInterval]);
+
+  // Handle the ChangeEvent when the Slider component is being interacted with, update the step
+  // interval to speed up / slow down the rate of the tic() redux action calls.
+  const handleStepChange = (evt: ChangeEvent<{}>, newValue: number | number[]) => {
+    setStepInterval(newValue as number);
+  };
   
   return (
     <Grid container alignContent="center" justify="center" className={styles.base} spacing={3}>
@@ -36,7 +43,14 @@ const Game: React.FC<GameProps> = ({ dispatch, layout, score, runningScore, iter
         <GameBoard boardState={layout} />
       </Grid>
       <Grid item>
-        <Controls score={score} runningScore={runningScore} iteration={iteration} />
+        <Controls score={score} runningScore={runningScore} iteration={iteration} mode={mode} />
+        <Typography variant="body1">
+          Step Interval:
+          {' '}
+          {stepInterval}
+          ms
+        </Typography>
+        <Slider value={stepInterval} step={1} onChange={handleStepChange} max={1000} min={1} />
       </Grid>
     </Grid>
   );
@@ -44,11 +58,11 @@ const Game: React.FC<GameProps> = ({ dispatch, layout, score, runningScore, iter
 
 const mapStateToProps = (state: ReduxState): object => {
  
-  const { layout, PacmanStore, runningScore, iteration } = state.game;
+  const { layout, PacmanStore, runningScore, iteration, mode } = state.game;
 
   const score = typeof PacmanStore !== 'undefined' ? PacmanStore.score : 0;
 
-  return { layout, score, runningScore, iteration };
+  return { layout, score, runningScore, iteration, mode };
 };
 
 export default connect(mapStateToProps)(Game);

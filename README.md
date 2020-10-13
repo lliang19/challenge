@@ -1,5 +1,11 @@
 # Pacman Technical Challenge
 
+## Submission
+
+[Click here](Submission.md) to view the submission doc.
+
+## Overview
+
 Typescript & React implementation of the popular arcade game Pacman.
 
 Currently pacman uses [A, S, W, D] keys for moving.

@@ -55,6 +55,20 @@ interface GameBoardItemMoves {
   [any: string]: GameBoardPiece,
 }
 
+interface GameBoardItemCount {
+  empty: number;
+  biscuit: number;
+  pill: number;
+  ghost: number;
+};
+
+interface GameBoardItemMovesWeight {
+  right: number,
+  left: number,
+  up: number,
+  down: number
+}
+
 interface KeyToGameDirection {
   [any: string]: string,
 }
@@ -80,6 +94,7 @@ interface GameState {
   mode: GameMode,
   pillTimer: GameBoardItemTimer,
   turn: number,
+  numIterations: number;
   runningScore?: number,
   iteration?: number
 }

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { GameBoardItemType, GameBoardPieceType, GameMode, GhostColor } from './Map';
 import Ghost from './game/Ghost';
 import Pacman from './game/Pacman';
@@ -40,6 +41,17 @@ const gameBoard = [
   [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
+
+/**
+ * 2D Array that represents Pacman's "memory", initialized to the same size as the board as per
+ * permission from Ezra. This will serve as a cross-iteration memory for which Pacman will update
+ * after each time he finishes an iteration (AKA being eaten). Then, in subsequent iterations he
+ * will reference this "memory" in order to determine what direction he should move in.
+ * 
+ * @see README for more thorough design/implementation decisions.
+ */
+let pacmanMemory: number[][] =
+  Array(gameBoard.length).fill(0).map(() => Array(gameBoard[0].length).fill(0));
 
 /**
  * Create a list of possible moves from any position
@@ -92,6 +104,20 @@ const ProcessLayout = (layout: GameBoardPiece[][]): GameBoardPiece[][] => {
 };
 
 /**
+ * Update Pacman's "memory" with a copy of the given new memory.
+ * 
+ * @method UpdateMemory
+ * @param {number[][] | null} newMemory The new memory of the board to update Pacman's memory with.
+ */
+const UpdateMemory = (newMemory: number[][] | null): void => {
+  if (newMemory !== null) {
+    pacmanMemory = _.cloneDeep(newMemory);
+  } else {
+    pacmanMemory = Array(gameBoard.length).fill(0).map(() => Array(gameBoard[0].length).fill(0));
+  }
+};
+
+/**
  * Convert a data array to game objects
  * 
  * @function InitializeGame
@@ -105,9 +131,10 @@ const InitializeGame = (): GameState => {
   const GhostStore = [];
   let colorIdx = 0;
   const turn = 0;
-  const mode: GameMode = GameMode.PLAYING;
+  const numIterations = 0;
+  const mode: GameMode = GameMode.WAITING;
   const pillTimer:GameBoardItemTimer = { timer: 0 };
-  const PacmanStore: Pacman = new Pacman({id: 'DUMMY', x: 0, y: 0, type: GameBoardPieceType.EMPTY, moves: {}}, items, pillTimer);
+  const PacmanStore: Pacman = new Pacman({id: 'DUMMY', x: 0, y: 0, type: GameBoardPieceType.EMPTY, moves: {}}, items, pillTimer, _.cloneDeep(pacmanMemory));
 
   for (let y = 0; y < gameBoard.length; y += 1) {
 
@@ -157,9 +184,10 @@ const InitializeGame = (): GameState => {
 
   layout = ProcessLayout(layout);
 
-  return { mode, turn, GhostStartPoints, layout, items, GhostStore, PacmanStore, pillTimer };
+  return { mode, turn, numIterations, GhostStartPoints, layout, items, GhostStore, PacmanStore,
+    pillTimer };
 };
 
-export { InitializeGame };
+export { UpdateMemory, InitializeGame };
 
 export default InitializeGame;

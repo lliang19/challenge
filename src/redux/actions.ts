@@ -5,9 +5,19 @@ export enum ActionTypes {
   RESET = 3
 }
 
-export const initGame = () => ({
+/**
+ * Updated initGame action to include an optional iterations parameter in order to specify how many
+ * iterations of Pacman to run.
+ * 
+ * @method initGame
+ * @param {number} iterations The number of iterations that should be run in sequence, game will run
+ * one iteration if parameter is not specified.
+ */
+export const initGame = (iterations?: number) => ({
   type: ActionTypes.INIT,
-  payload: {}
+  payload: {
+    iterations
+  }
 });
 
 export const resetScore = () => ({

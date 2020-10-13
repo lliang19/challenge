@@ -1,4 +1,5 @@
-import { GameBoardItemType, GameDirection, GameBoardPieceType } from '../Map';
+import { GameBoardItemType, GameDirection, GameBoardPieceType, GameBoardItemTypeToCount } from '../Map';
+import isObjKey from './Utils';
 
 class Item implements GameBoardItem {
 
@@ -93,6 +94,44 @@ class Item implements GameBoardItem {
     }
 
     return false;
+  }
+
+  /**
+   * Allows an item to look in a single direction for a mapping of all other items and their counts,
+   * up until a given max distance.
+   * 
+   * @method findItems
+   * @param {string} directionKey Direction to look in
+   * @param {number} maxDistance Maximum distance in given direction to look.
+   * @return {GameBoardItemCount} Map of GameBoardItemType (in string form) to their counts.
+   */
+  findItems(directionKey: string, maxDistance: number): GameBoardItemCount {
+    let currentPiece = this.piece.moves[directionKey];
+    let currentDistance = 0;
+
+    const itemCounts: GameBoardItemCount = {
+      empty: 0,
+      biscuit: 0,
+      pill: 0,
+      ghost: 0
+    };
+
+    // Look in the given direction while we haven't hit a wall and are within our maximum distance
+    while (typeof currentPiece !== 'undefined' && currentPiece.type !== GameBoardPieceType.WALL &&
+           currentDistance < maxDistance) {
+      const item = this.items[currentPiece.y][currentPiece.x];
+      if (typeof item !== 'undefined') {
+        const type = GameBoardItemTypeToCount(item.type);
+        if (isObjKey(type, itemCounts)) {
+          itemCounts[type] += 1;
+        }
+      }
+
+      currentDistance += 1;
+      currentPiece = currentPiece.moves[directionKey];
+    }
+
+    return itemCounts;
   }
 
   /** 
