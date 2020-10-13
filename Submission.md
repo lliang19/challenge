@@ -8,7 +8,7 @@ In this challenge, I brainstormed a bunch of different ways to design and implem
 
 I didn't make any changes to the startup script, so a simple <code>npm run</code> will spin up the environment and start Pacman. I debated implementing a switch to preserve Pacman's original key-based movements, but I decided not to for the sake of time (and because I had already deep dived into my current implementation haha). Upon starting up Pacman, I've tweaked the system to start off on the <code>WAITING</code> GameMode. I've added a label below <code>Iteration</code> called <code>Game Mode</code>, which indicates what state the game is in (Waiting, Playing, or Finished). Clicking "New Game" will start the next iteration, the same way it was originally implemented. Clicking on the "Reset Score" button will reset the score and iteration count as well as put the game back into <code>WAITING</code> mode. I introduced a new button "Run 100 Games", which will start up a completely new game starting at iteration 1 and continuously running subsequent iterations until 100 iterations. I also incorporated a Slider component to change the speed at which Pacman runs; this was helpful in testing since I could speed up and slow down Pacman dynamically.
 
-Development-wise, I added the <code>lodash</code> package just to help with deep cloning 2D arrays (<code>_.cloneDeep()</code>) that I will explain later in this doc. 
+Development-wise, I added the <code>lodash</code> package just to help with deep cloning 2D arrays (<code>_.cloneDeep()</code>) that I will explain later in this doc. Running <code>npm install</code> prior to starting up Pacman should install that dependency automatically.
 
 ## Implementation Design
 
